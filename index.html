@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Craftedsquares</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+        .topbar {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-right: 20px;
+        }
+        .content {
+            display: flex;
+            align-items: center;
+        }
+        .grid {
+            display: grid;
+            gap: 1px;
+            max-width: 90vw;
+            max-height: 90vh;
+        }
+        .cell {
+            background-color: white;
+            border: 1px solid #ddd;
+        }
+        .reset-button, .size-button, .color-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+        .color-button {
+            width: 30px;
+            height: 30px;
+            margin: 0 5px;
+            border: 2px solid transparent;
+        }
+        .color-button.active {
+            border: 3px solid lime;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <button class="color-button" style="background-color: red;" onclick="setColor('red', this)"></button>
+        <button class="color-button" style="background-color: orange;" onclick="setColor('orange', this)"></button>
+        <button class="color-button" style="background-color: yellow;" onclick="setColor('yellow', this)"></button>
+        <button class="color-button" style="background-color: green;" onclick="setColor('green', this)"></button>
+        <button class="color-button" style="background-color: blue;" onclick="setColor('blue', this)"></button>
+        <button class="color-button" style="background-color: pink;" onclick="setColor('pink', this)"></button>
+        <button class="color-button" style="background-color: violet;" onclick="setColor('violet', this)"></button>
+        <button class="color-button" style="background-color: brown;" onclick="setColor('brown', this)"></button>
+        <button class="color-button" style="background-color: black;" onclick="setColor('black', this)"></button>
+        <button class="color-button" style="background-color: white; border: 1px solid black;" onclick="setColor('white', this)"></button>
+    </div>
+    <div class="content">
+        <div class="sidebar">
+    <button class="size-button" onclick="setGridSize(20)">20px</button>
+    <button class="size-button" onclick="setGridSize(10)">10px</button>
+    <button class="size-button" onclick="setGridSize(5)">5px</button>
+    <button class="reset-button" id="reset">Reset</button>
+
+    <!-- PayPal Donate Button -->
+    <form action="https://www.paypal.com/donate" method="post" target="_top" style="margin-top: 10px;">
+        <input type="hidden" name="hosted_button_id" value="NWJ9KR5Z3Y3PG" />
+        <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+        <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+    </form>
+</div>
+        <div class="grid" id="grid"></div>
+    </div>
+    
+    <script>
+        let selectedColor = 'black';
+        const grid = document.getElementById("grid");
+        const resetButton = document.getElementById("reset");
+        let activeButton = document.querySelector(".color-button[style*='black']");
+        activeButton.classList.add("active");
+
+        function setGridSize(size) {
+            grid.innerHTML = "";
+            const gridSize = Math.floor(window.innerWidth / (size + 2));
+            grid.style.gridTemplateColumns = `repeat(${gridSize}, ${size}px)`;
+            grid.style.gridTemplateRows = `repeat(${gridSize}, ${size}px)`;
+
+            for (let i = 0; i < gridSize * gridSize; i++) {
+                const cell = document.createElement("div");
+                cell.classList.add("cell");
+                cell.style.width = `${size}px`;
+                cell.style.height = `${size}px`;
+                cell.addEventListener("click", () => {
+                    cell.style.backgroundColor = selectedColor;
+                });
+                grid.appendChild(cell);
+            }
+        }
+
+        function setColor(color, button) {
+            selectedColor = color;
+            if (activeButton) {
+                activeButton.classList.remove("active");
+            }
+            button.classList.add("active");
+            activeButton = button;
+        }
+
+        resetButton.addEventListener("click", () => {
+            document.querySelectorAll(".cell").forEach(cell => cell.style.backgroundColor = "white");
+        });
+
+     setGridSize(10); // Set default size
+
+function saveGrid() {
+    let gridData = [];
+    document.querySelectorAll(".cell").forEach(cell => {
+        gridData.push(cell.style.backgroundColor || "white");
+    });
+    localStorage.setItem("gridData", JSON.stringify(gridData));
+}
+
+function loadGrid() {
+    let gridData = JSON.parse(localStorage.getItem("gridData"));
+    if (gridData) {
+        document.querySelectorAll(".cell").forEach((cell, index) => {
+            cell.style.backgroundColor = gridData[index];
+        });
+    }
+}
+
+// Salvare automată când se desenează
+document.addEventListener("click", saveGrid);
+
+// Încărcare la deschiderea paginii
+window.onload = function () {
+    setGridSize(10);
+    setTimeout(loadGrid, 100); // Întârziere mică pentru a asigura încărcarea
+};
+    </script>
+</body>
+</form>
+</html>
